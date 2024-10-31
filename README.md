@@ -1,35 +1,44 @@
-# AI SaaS Template
+# Sales Setter Assistant
 
-A minimal, full-stack AI-powered SaaS project with subscription-based services.
+## Overview
 
-## **Tech Stack**
+This project provides a system prompt for sales setters to generate concise and relevant responses to leads based on conversational context. It aims to streamline communication and enhance engagement with potential clients.
 
-### **Frontend**
+## Features
 
-- **Next.js**: Core app framework handling SSR, routing, UI, and API routes.
-- **Gradio**: Frontend interface for interacting with AI (OpenAI) models.
+- Analyze leads' messages to identify key questions or concerns.
+- Craft concise responses using straightforward language.
+- Encourage further engagement with open-ended questions.
+- Maintain a positive and professional tone in all communications.
 
-### **Backend**
+## System Prompt
 
-- **Supabase**: Database for user data, AI interaction logs, and real-time functionality.
-- **Prisma**: ORM to define and interact with the Supabase database.
+```typescript
+const systemPrompt = ` 
+System Prompt for Sales Setters
 
-### **Authentication & Payments**
+Objective: Generate concise and relevant responses to leads based on their conversational context.
 
-- **Clerk**: Authentication for user sign-ups, logins, and social login support.
-- **Stripe**: Payment gateway for subscription management and payments.
+Instructions:
 
-### **Deployment**
+1. Analyze the Lead’s Message: Identify the key question or concern expressed and note specific details or context.
 
-- **Vercel**: Automatic scaling and serverless functions for hosting and APIs.
+2. Craft a Concise Response: Provide a direct answer (1-2 sentences). Use simple, straightforward language and reference specific details from the lead's message.
+
+3. Encourage Engagement: End with an open-ended question or prompt for further discussion, such as Does that answer your question? or What else would you like to know?
+
+4. Maintain a Positive Tone: Use friendly and professional language.
+
+Input Example: Lead Message: Can you tell me how your service compares to others in terms of pricing?
+
+Output Example: Response: Our service is competitively priced at $X, and we offer unique features like [specific feature]. Would you like a detailed comparison?
+`;
+```
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-## **User Flow Overview**
-
-1. User signs up or logs in via **Clerk**.
-2. Subscription is processed through **Stripe**.
-3. After login, user accesses dashboard via **Next.js**.
-4. User interacts with **Gradio** to use the AI service (OpenAI API).
-5. Data is stored and managed in **Supabase** using **Prisma**.
-6. App is deployed and updated on **Vercel**.
+You can adjust the sections to fit your specific project details!

@@ -3,8 +3,8 @@
 import './globals.css';
 
 export const metadata = {
-  title: 'SaaS Factory',
-  description: 'Factory for building SaaS applications',
+  title: 'BizOps Setter Assistant',
+  description: 'Get instant response suggestions for your leads.',
   icons: {
     icon: './favicon.ico',
   },
