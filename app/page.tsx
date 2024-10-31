@@ -4,7 +4,6 @@
 import { useState } from 'react';
 
 export default function Home() {
-  const [systemPrompt, setSystemPrompt] = useState('');
   const [userPrompt, setUserPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState('');
