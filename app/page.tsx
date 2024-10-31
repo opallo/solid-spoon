@@ -20,7 +20,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ systemPrompt, userPrompt }),
+        body: JSON.stringify({ userPrompt }),
       });
 
       const data = await res.json();
@@ -42,15 +42,8 @@ export default function Home() {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          name="systemPrompt"
-          placeholder="Enter system prompt"
-          onChange={(e) => setSystemPrompt(e.target.value)}
-          value={systemPrompt}
-        />
-        <input
-          type="text"
           name="userPrompt"
-          placeholder="Enter user prompt"
+          placeholder="What are they saying?"
           onChange={(e) => setUserPrompt(e.target.value)}
           value={userPrompt}
         />
