@@ -1,102 +1,67 @@
-'use client'
-import { useEffect, useState, useMemo } from 'react'
-import { useSession, useUser } from '@clerk/nextjs'
-import { createClient } from '@supabase/supabase-js'
-import Header from '@/components/Header'
-import CheckoutButton from '@/components/CheckoutButton'
+// src/app/page.tsx
 
-// Add this interface at the top of the file, after the imports
-interface Task {
-  id: number;
-  name: string;
-  // Add other properties if needed
-}
+'use client';
+import { useState } from 'react';
 
 export default function Home() {
-  const [tasks, setTasks] = useState<Task[]>([])
-  const [loading, setLoading] = useState(true)
-  const [name, setName] = useState('')
-  // The `useUser()` hook will be used to ensure that Clerk has loaded data about the logged in user
-  const { user } = useUser()
-  // The `useSession()` hook will be used to get the Clerk session object
-  const { session } = useSession()
+  const [systemPrompt, setSystemPrompt] = useState('');
+  const [userPrompt, setUserPrompt] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState('');
 
-  // Create a custom supabase client that injects the Clerk Supabase token into the request headers
-  const client = useMemo(() => {
-    return createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        global: {
-          // Get the custom Supabase token from Clerk
-          fetch: async (url, options = {}) => {
-            const clerkToken = await session?.getToken({
-              template: 'supabase',
-            })
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setResponse(''); // Reset response
 
-            // Insert the Clerk Supabase token into the headers
-            const headers = new Headers(options?.headers)
-            headers.set('Authorization', `Bearer ${clerkToken}`)
-
-            // Now call the default fetch
-            return fetch(url, {
-              ...options,
-              headers,
-            })
-          },
+    try {
+      const res = await fetch('/api/openai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      },
-    )
-  }, [session])
+        body: JSON.stringify({ systemPrompt, userPrompt }),
+      });
 
-  // This `useEffect` will wait for the User object to be loaded before requesting
-  // the tasks for the logged in user
-  useEffect(() => {
-    if (!user) return
-
-    async function loadTasks() {
-      setLoading(true)
-      const { data, error } = await client.from('tasks').select()
-      if (!error) setTasks(data as Task[])
-      setLoading(false)
+      const data = await res.json();
+      if (res.ok) {
+        setResponse(data.response);
+      } else {
+        setResponse(data.error || 'Unexpected error');
+      }
+    } catch (error) {
+      console.error("Error during fetch:", error);
+      setResponse('There was an error communicating with the API.');
+    } finally {
+      setLoading(false);
     }
-
-    loadTasks()
-  }, [user, client])
-
-  async function createTask(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const { data, error } = await client.from('tasks').insert({ name }).select()
-    if (!error && data) {
-      setTasks([...tasks, ...data])
-      setName('')
-    }
-  }
+  };
 
   return (
     <div>
-      <Header />
-      <CheckoutButton />
-
-      <h1>Tasks</h1>
-
-      {loading && <p>Loading...</p>}
-
-      {!loading && tasks.length > 0 && tasks.map((task: Task) => <p key={task.id}>{task.name}</p>)}
-
-      {!loading && tasks.length === 0 && <p>No tasks found</p>}
-
-      <form onSubmit={createTask}>
+      <form onSubmit={handleSubmit}>
         <input
-          autoFocus
           type="text"
-          name="name"
-          placeholder="Enter new task"
-          onChange={(e) => setName(e.target.value)}
-          value={name}
+          name="systemPrompt"
+          placeholder="Enter system prompt"
+          onChange={(e) => setSystemPrompt(e.target.value)}
+          value={systemPrompt}
         />
-        <button type="submit">Add</button>
+        <input
+          type="text"
+          name="userPrompt"
+          placeholder="Enter user prompt"
+          onChange={(e) => setUserPrompt(e.target.value)}
+          value={userPrompt}
+        />
+        <button type="submit" disabled={loading}>
+          {loading ? 'Loading...' : 'Get Response'}
+        </button>
       </form>
+      <div>
+        <h2>Response:</h2>
+        <p>{response}</p>
+      </div>
     </div>
-  )
+  );
 }

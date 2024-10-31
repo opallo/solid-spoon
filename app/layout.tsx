@@ -1,6 +1,5 @@
 // src/app/layout.tsx
 
-import { ClerkProvider } from '@clerk/nextjs';
 import './globals.css';
 
 export const metadata = {
@@ -19,9 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ClerkProvider>
-          {children}
-        </ClerkProvider>
+        { children }
       </body>
     </html>
   );
